@@ -1,5 +1,4 @@
 # GraphQL-Mern
-install 
-express
-express-graphql
-graphql
+
+
+npm -i express express-graphql graphql
