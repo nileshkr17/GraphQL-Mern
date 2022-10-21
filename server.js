@@ -1,13 +1,17 @@
 const express  = require('express')
 const app = express();
 const expressGraphQL = require('express-graphql').graphqlHTTP
-
 const authors = [
-	{ id: 1, name: 'J. K. Rowling' },
-	{ id: 2, name: 'J. R. R. Tolkien' },
-	{ id: 3, name: 'Brent Weeks' }
+	{
+     id: 1, name: 'J. K. Rowling' 
+    },
+	{ 
+    id: 2, name: 'J. R. R. Tolkien'
+   },
+	{
+     id: 3, name: 'Brent Weeks'
+     }
 ]
-
 const books = [
 	{ id: 1, name: 'Harry Potter and the Chamber of Secrets', authorId: 1 },
 	{ id: 2, name: 'Harry Potter and the Prisoner of Azkaban', authorId: 1 },
@@ -58,8 +62,34 @@ const BookType = new GraphQLObjectType({
       }
     })
   })
+ 
+  const RootMutationType = new GraphQLObjectType({
+    name: 'Mutation',
+    description: 'Root Mutation',
+    fields: () => ({
+      addBook:{
+        type: BookType,
+        description: 'Add a book',
+        args:{
+          name: {
+            type: GraphQLNonNull(GraphQLString)},
+          authorId: {
+            type: GraphQLNonNull(GraphQLInt)
+          },
+          resolve: (parent, args) => {
+            const book = {id: books.length + 1, name: args.name, authorId: args.authorId}
+            books.push(book)
+            return book
+          }
 
-  const RootQueryType = new GraphQLObjectType({
+        }
+      }
+    })
+  }) 
+
+
+
+ const RootQueryType = new GraphQLObjectType({
     name: 'Query',
     description: 'Root Query',
     fields: () => ({
@@ -92,11 +122,9 @@ const BookType = new GraphQLObjectType({
     })
   })
 const schema = new GraphQLSchema ({
-    query: RootQueryType
-
+    query: RootQueryType,
+    mutation: RootMutationType
 })
-
-
 app.use('/graphql',expressGraphQL({
     schema: schema,
     graphiql: true
